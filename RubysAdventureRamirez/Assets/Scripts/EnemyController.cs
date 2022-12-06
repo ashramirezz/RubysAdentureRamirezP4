@@ -7,6 +7,7 @@ public class EnemyController : MonoBehaviour
     public float speed;
     public bool vertical;
     public float changeTime = 3.0f;
+    
 
     Rigidbody2D rigidbody2D;
     float timer;
@@ -14,6 +15,7 @@ public class EnemyController : MonoBehaviour
     bool broken = true;
 
     Animator animator;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -24,17 +26,25 @@ public class EnemyController : MonoBehaviour
     void Update()
     {
         timer -= Time.deltaTime;
+            //remember ! inverse the test, so if broken is true !brokern will be false and return won't be executed. 
 
         if (timer < 0)
         {
             direction = -direction;
             timer = changeTime;
         }
+
+        if(!broken)
+        {
+            return;
+        }
     }
 
     // Update is called once per frame
     void FixedUpdate()
     {
+        //remember ! inverse the test, so if broken is true !broken will be false and return won't be executed. 
+
         Vector2 position = rigidbody2D.position;
 
         if (vertical)
@@ -50,6 +60,10 @@ public class EnemyController : MonoBehaviour
             animator.SetFloat("Move Y", 0);
         }
 
+        if(!broken)
+        {
+            return;
+        }
 
         rigidbody2D.MovePosition(position);
     }
@@ -61,5 +75,15 @@ public class EnemyController : MonoBehaviour
         {
             player.ChangeHealth(-1);
         }
+    }
+
+    //Public because we want to call it from elsewhere likee the projectile script. 
+    public void Fix()
+    {
+        broken = false;
+        rigidbody2D.simulated = false;
+        //optional if you added the fixed animation
+        animator.SetTrigger("Fixed");
+        
     }
 }
